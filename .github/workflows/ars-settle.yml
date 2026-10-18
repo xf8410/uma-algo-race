@@ -1,0 +1,50 @@
+name: ars-settle
+on:
+  workflow_dispatch:
+    inputs:
+      n_iter:
+        description: "每 (algo × seed) 轮数"
+        default: "60"
+      seeds:
+        description: "CRN 配对种子"
+        default: "7,13,23,31,47,101,103,107,109,113"
+  push:
+    paths: ["experiments/ars_settle.py", ".github/workflows/ars-settle.yml", "optimizers/**"]
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout simulator
+        uses: actions/checkout@v4
+        with:
+          repository: xf8410/umaai-rs
+          ref: master
+          path: umaai-rs
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            umaai-rs/target
+          key: race-cargo-${{ hashFiles('umaai-rs/Cargo.lock') }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Build bench_base
+        run: cargo build --release --bin bench_base
+        working-directory: umaai-rs
+      - name: Run ARS settle
+        run: |
+          export UMA_BENCH_BIN="$PWD/umaai-rs/target/release/bench_base"
+          python experiments/ars_settle.py --n-iter ${{ github.event.inputs.n_iter || '60' }} --seeds "${{ github.event.inputs.seeds || '7,13,23,31,47,101,103,107,109,113' }}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ars-settle-result
+          path: results/
