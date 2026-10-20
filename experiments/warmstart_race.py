@@ -55,14 +55,14 @@ def paired_t_vs_const(deltas):
     return mean, std, t, p
 
 
-def run_one(name, cls, ev, seed, n_iter, warm, sigma0):
+def run_one(name, cls, ev, seed, n_iter, warm, sigma0, level="smoke"):
     t0 = time.time()
     opt = cls(dim=DIM, seed=seed, center=warm, sigma0=sigma0)
     curve = []
     for i in range(n_iter):
         x = opt.ask()
         genome = decode(x)
-        out = ev.evaluate(genome, level="smoke")
+        out = ev.evaluate(genome, level=level)
         opt.tell(x, out["score"])
         curve.append({"i": i, "score": out["score"], "best": opt.best})
     return {
@@ -94,6 +94,8 @@ def main():
     ap.add_argument("--seeds", default="7,13,23,31,47")
     ap.add_argument("--sigma0", type=float, default=0.15,
                     help="暖启探索步长（playbook v3 先例 sigma0=0.15）")
+    ap.add_argument("--level", default="smoke", choices=["smoke", "full"],
+                    help="评估档位：smoke=3build×100局 / full=7build×100局+holdout43")
     ap.add_argument("--seed-file", default=str(ROOT / "data/seeds/seed_tpe_best.toml"))
     ap.add_argument("--uma", type=int, default=111501)
     ap.add_argument("--mock", action="store_true")
@@ -119,24 +121,26 @@ def main():
         print(f"[warm] MOCK 模式：基线取常数 {baseline}")
     else:
         ev = Evaluator(uma=args.uma)
-        out = ev.evaluate(decode(warm), level="smoke")
+        out = ev.evaluate(decode(warm), level=args.level)
         baseline = out["score"]
-        print(f"[warm] 冠军重放定标 B = {baseline}（历史 tpe 63499.0，口径漂移以本数为准）")
+        print(f"[warm] 冠军重放定标 B = {baseline}（{args.level} 档，口径漂移以本数为准）")
 
     # 3) 赛马
+    gpe = 300 if args.level == "smoke" else 1400   # full=700训练+700holdout
     results = {"algos": algos, "seeds": seed_list, "n_iter": args.n_iter,
                "sigma0": args.sigma0, "baseline": baseline, "runs": [],
-               "bench_level": "smoke", "games_per_eval": 300}
+               "bench_level": args.level, "games_per_eval": gpe}
     n_evals_start = getattr(ev, "n_evals", 0)
     for name in algos:
         cls = REGISTRY[name]
         for seed in seed_list:
-            r = run_one(name, cls, ev, seed, args.n_iter, warm, args.sigma0)
+            r = run_one(name, cls, ev, seed, args.n_iter, warm, args.sigma0,
+                        level=args.level)
             results["runs"].append(r)
             print(f"[warm] {name} seed={seed}: best={r['best']} "
                   f"({r['elapsed_sec']}s)")
     results["n_evals_actual"] = int(getattr(ev, "n_evals", 0) - n_evals_start)
-    results["games_actual"] = int(results["n_evals_actual"] * 300)  # smoke=3build×100局
+    results["games_actual"] = int(results["n_evals_actual"] * gpe)
 
     # 4) 统计
     stats = {}
@@ -175,7 +179,7 @@ def main():
         f"# 暖启赛马（{', '.join(algos)}）——在冠军参数上叠加",
         "",
         f"- 暖启种子: `{Path(args.seed_file).name}`（重放定标 B={baseline}）",
-        f"- 协议: {len(seed_list)} seed × {args.n_iter} iter，sigma0={args.sigma0}",
+        f"- 协议: {len(seed_list)} seed × {args.n_iter} iter，sigma0={args.sigma0}，档位={args.level}",
         f"- 总用时: {results['total_elapsed_sec']}s",
         "",
         "| 算法 | mean best | std | mean Δ vs B | std Δ | t | p | 判定 |",
@@ -199,7 +203,7 @@ def main():
         "【协议】",
         f"  算法: {', '.join(algos)}（均暖启自同一冠军向量，sigma0={args.sigma0}）",
         f"  种子: {seed_list} × {args.n_iter} iter（CRN: bench seed=42 配对）",
-        f"  评估: smoke 档（3 初筛卡组 × 100 局/次）",
+        f"  评估: {args.level} 档（smoke=3 初筛卡组×100 局 / full=7 build×100 局+holdout 43）",
         f"  基线: 冠军重放定标 B={baseline}",
         f"  实际评估 {results['n_evals_actual']} 次 = 约 {results['games_actual']} 局（CRN 缓存命中不重复跑）",
         f"  总用时: {results['total_elapsed_sec']}s",
