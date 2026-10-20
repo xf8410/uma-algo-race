@@ -64,8 +64,17 @@ jobs:
             --sigma0 "${{ github.event.inputs.sigma0 || '0.15' }}" \
             --seed-file "${{ github.event.inputs.seed_file || 'data/seeds/seed_tpe_best.toml' }}" \
             --uma "${{ github.event.inputs.uma || '111501' }}"
+      - name: Commit txt 日志进仓（跑批自动留档）
+        run: |
+          git config user.name "race-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add logs/ || true
+          git commit -m "warmstart-race run ${{ github.run_number }}: txt 日志自动留档" || echo "无新日志"
+          git push || echo "（同 run 已提交过）"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: warmstart-race-result
-          path: results/
+          path: |
+            results/
+            logs/

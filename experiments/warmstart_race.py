@@ -125,7 +125,9 @@ def main():
 
     # 3) 赛马
     results = {"algos": algos, "seeds": seed_list, "n_iter": args.n_iter,
-               "sigma0": args.sigma0, "baseline": baseline, "runs": []}
+               "sigma0": args.sigma0, "baseline": baseline, "runs": [],
+               "bench_level": "smoke", "games_per_eval": 300}
+    n_evals_start = getattr(ev, "n_evals", 0)
     for name in algos:
         cls = REGISTRY[name]
         for seed in seed_list:
@@ -133,6 +135,8 @@ def main():
             results["runs"].append(r)
             print(f"[warm] {name} seed={seed}: best={r['best']} "
                   f"({r['elapsed_sec']}s)")
+    results["n_evals_actual"] = int(getattr(ev, "n_evals", 0) - n_evals_start)
+    results["games_actual"] = int(results["n_evals_actual"] * 300)  # smoke=3build×100局
 
     # 4) 统计
     stats = {}
@@ -184,6 +188,43 @@ def main():
                      f"{s['p']} | {s['verdict']} |")
     (out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"\n[warm] 报告写入 {out_dir}/report.md")
+
+    # txt 运行日志（用户纪律 2026-10-20：跑批结束自动出 txt，随产物进仓）
+    txt = [
+        "=" * 62,
+        f"暖启赛马运行日志   {time.strftime('%Y%m%d_%H%M%S %Z')}",
+        f"模式: 在冠军参数上叠加（暖启种子 {Path(args.seed_file).name}，非独狼跑）",
+        "=" * 62,
+        "",
+        "【协议】",
+        f"  算法: {', '.join(algos)}（均暖启自同一冠军向量，sigma0={args.sigma0}）",
+        f"  种子: {seed_list} × {args.n_iter} iter（CRN: bench seed=42 配对）",
+        f"  评估: smoke 档（3 初筛卡组 × 100 局/次）",
+        f"  基线: 冠军重放定标 B={baseline}",
+        f"  实际评估 {results['n_evals_actual']} 次 = 约 {results['games_actual']} 局（CRN 缓存命中不重复跑）",
+        f"  总用时: {results['total_elapsed_sec']}s",
+        "",
+        "【成绩】",
+        f"  {'算法':8} {'mean best':>10} {'std':>7} {'Δ vs B':>9} {'t':>8} {'p':>7}  判定",
+    ]
+    for name in algos:
+        s = stats[name]
+        txt.append(f"  {name:8} {s['mean_best']:>10.1f} {s['std_best']:>7.1f} "
+                   f"{s['mean_delta']:>+9.1f} {str(s['t']):>8} {str(s['p']):>7}  {s['verdict']}")
+    txt += ["", "【结论】"]
+    winners = [a for a in algos if stats[a]["sig_positive"] and stats[a]["mean_delta"] > SIG_THRESHOLD]
+    if winners:
+        txt.append(f"  出线: {', '.join(winners)}（p<0.05 且 Δ>+{SIG_THRESHOLD:.0f}）→ 升 full 档裁决（7build×100局+holdout 43）")
+    else:
+        txt.append(f"  无出线（阈值 +{SIG_THRESHOLD:.0f}，p<0.05）→ 按纪律换下一个算法，负结果记档保留")
+    txt += [
+        "  判读口径: BASELINE.md 分层协议——smoke 出头才够格挑战绝对锚，跨口径不可比",
+        "=" * 62,
+    ]
+    txt_path = ROOT / "logs" / f"warmstart_{stamp}.txt"
+    txt_path.parent.mkdir(exist_ok=True)
+    txt_path.write_text("\n".join(txt) + "\n", encoding="utf-8")
+    print(f"[warm] txt 日志写入 {txt_path}")
 
 
 def _parse(toml_text):
