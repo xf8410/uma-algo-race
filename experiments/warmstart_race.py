@@ -155,15 +155,17 @@ def main():
             "std_best": round(float(np.std(bests, ddof=1)), 1),
             "delta_vs_baseline": [round(d, 1) for d in deltas],
             "mean_delta": round(mean_d, 1), "std_delta": round(std_d, 1),
-            "t": round(t_d, 3) if t_d == t_d else None,
-            "p": round(p_d, 4) if p_d is not None else None,
+            "t": round(t_d, 3) if (t_d is not None and t_d == t_d) else None,
+            "p": round(p_d, 4) if (p_d is not None and p_d == p_d) else None,
             "sig_positive": sig,
         }
         verdict = ("promote 候补" if sig and mean_d > SIG_THRESHOLD
                    else "mild 观察" if sig else "n.s.（换下一个）")
         stats[name]["verdict"] = verdict
+        t_str = f"{t_d:.2f}" if t_d is not None else "n/a"
+        p_str = f"{p_d}" if p_d is not None else "n/a"
         print(f"[warm] {name}: mean Δ={mean_d:+.1f} ± {std_d:.1f} "
-              f"(t={t_d:.2f}, p={p_d}) → {verdict}")
+              f"(t={t_str}, p={p_str}) → {verdict}")
 
     results["stats"] = stats
     results["total_elapsed_sec"] = round(
