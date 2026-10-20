@@ -21,6 +21,9 @@ on:
       uma:
         description: "马娘 gameId"
         default: "111501"
+      level:
+        description: "评估档位（smoke/full）"
+        default: "smoke"
   push:
     paths: ["optimizers/**", "experiments/warmstart_race.py", "lab/**", ".github/workflows/warmstart-race.yml"]
 
@@ -66,7 +69,8 @@ jobs:
             --seeds "${{ github.event.inputs.seeds || '7,13' }}" \
             --sigma0 "${{ github.event.inputs.sigma0 || '0.15' }}" \
             --seed-file "${{ github.event.inputs.seed_file || 'data/seeds/seed_tpe_best.toml' }}" \
-            --uma "${{ github.event.inputs.uma || '111501' }}"
+            --uma "${{ github.event.inputs.uma || '111501' }}" \
+            --level "${{ github.event.inputs.level || 'smoke' }}"
       - name: Commit txt 日志进仓（跑批自动留档）
         run: |
           git config user.name "race-bot"
