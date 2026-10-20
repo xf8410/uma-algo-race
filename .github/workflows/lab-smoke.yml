@@ -70,7 +70,7 @@ jobs:
             --budget "${{ github.event.inputs.budget || '16' }}" \
             --uma "${{ github.event.inputs.uma || '111501' }}" \
             --level "${{ github.event.inputs.level || 'smoke' }}" \
-            --center-toml seeds/center_r8.toml \
+            --center-toml data/seeds/seed_r8champ.toml \
             --out results/
 
       - name: Upload results
