@@ -24,6 +24,9 @@ on:
   push:
     paths: ["optimizers/**", "experiments/warmstart_race.py", "lab/**", ".github/workflows/warmstart-race.yml"]
 
+permissions:
+  contents: write   # txt 日志自动 commit+push 需要
+
 jobs:
   race:
     runs-on: ubuntu-latest
