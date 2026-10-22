@@ -59,14 +59,19 @@ def run_one(name, cls, ev, seed, n_iter, warm, sigma0, level="smoke"):
     t0 = time.time()
     opt = cls(dim=DIM, seed=seed, center=warm, sigma0=sigma0)
     curve = []
+    best_x, best_score = None, -float("inf")
     for i in range(n_iter):
         x = opt.ask()
         genome = decode(x)
         out = ev.evaluate(genome, level=level)
         opt.tell(x, out["score"])
+        if out["score"] > best_score:
+            best_x, best_score = list(x), out["score"]
         curve.append({"i": i, "score": out["score"], "best": opt.best})
     return {
         "name": name, "seed": seed, "best": opt.best, "curve": curve,
+        "best_x": best_x,          # 胜者向量（导出 genome 用）
+        "best_genome": decode(best_x) if best_x is not None else None,
         "elapsed_sec": round(time.time() - t0, 1),
     }
 
@@ -176,6 +181,21 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "result.json").write_text(
         json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # 胜者 genome 导出（TOML，Rust parse_override_toml 可直接吃）
+    from lab.genome import genome_to_toml
+    for r in results["runs"]:
+        if r.get("best_genome"):
+            gpath = out_dir / f"best_{r['name']}_seed{r['seed']}.toml"
+            gpath.write_text(genome_to_toml(r["best_genome"]), encoding="utf-8")
+    # 全场最强单独一份（新暖启锚候选）
+    champ = max(results["runs"], key=lambda r: r["best"])
+    if champ.get("best_genome"):
+        (out_dir / "CHAMPION.toml").write_text(
+            f"# 全场最强：{champ['name']} seed={champ['seed']} best={champ['best']}\n"
+            + genome_to_toml(champ["best_genome"]), encoding="utf-8")
+        print(f"[warm] 冠军导出 {out_dir/'CHAMPION.toml'}"
+              f"（{champ['name']} seed={champ['seed']} best={champ['best']}）")
 
     lines = [
         f"# 暖启赛马（{', '.join(algos)}）——在冠军参数上叠加",
