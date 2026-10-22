@@ -8,6 +8,8 @@ from .powell_opt import PowellOptimizer
 from .sa_opt import SaOptimizer
 from .spsa_opt import SpsaOptimizer
 from .tpe_opt import TpeOptimizer
+from .xnes_opt import XnesOptimizer
+from .bore_opt import BoreOptimizer
 
 REGISTRY = {
     "cmaes": CmaesOptimizer,
@@ -21,4 +23,8 @@ REGISTRY = {
     "spsa": SpsaOptimizer,
     "ars": ArsOptimizer,
     "powell": PowellOptimizer,
+    # 2026-10-20 第二梯队补位（blackbox-selection #3/#5，tier1 收账后排队项）：
+    # xnes 分布参数自然梯度（CMA-ES 同族对照）；bore 密度比 BO（GBDT 分类器）
+    "xnes": XnesOptimizer,
+    "bore": BoreOptimizer,
 }

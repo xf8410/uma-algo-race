@@ -1,0 +1,87 @@
+name: warmstart-race
+
+on:
+  workflow_dispatch:
+    inputs:
+      algos:
+        description: "新算法（逗号分隔）"
+        default: "xnes,bore"
+      n_iter:
+        description: "每 (algo × seed) 评估次数"
+        default: "30"
+      seeds:
+        description: "CRN 配对种子"
+        default: "7,13,23,31,47"
+      sigma0:
+        description: "暖启初始步长（v3 prior=0.15）"
+        default: "0.15"
+      seed_file:
+        description: "暖启冠军种子 TOML"
+        default: "data/seeds/seed_tpe_best.toml"
+      uma:
+        description: "马娘 gameId"
+        default: "111501"
+      level:
+        description: "评估档位（smoke/full）"
+        default: "smoke"
+  push:
+    paths: ["optimizers/**", "experiments/warmstart_race.py", "lab/**", ".github/workflows/warmstart-race.yml"]
+
+permissions:
+  contents: write   # txt 日志自动 commit+push 需要
+
+jobs:
+  race:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout simulator
+        uses: actions/checkout@v4
+        with:
+          repository: xf8410/umaai-rs
+          ref: master
+          path: umaai-rs
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            umaai-rs/target
+          key: race-cargo-${{ hashFiles('umaai-rs/Cargo.lock') }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Build bench_base
+        run: cargo build --release -p umasim --bin bench_base
+        working-directory: umaai-rs
+      - name: Warmstart race（push 触发=小预算接线自检，dispatch=全协议）
+        env:
+          UMA_BENCH_BIN: ${{ github.workspace }}/umaai-rs/target/release/bench_base
+        run: |
+          python experiments/warmstart_race.py \
+            --algos "${{ github.event.inputs.algos || 'xnes,bore' }}" \
+            --n-iter "${{ github.event.inputs.n_iter || '8' }}" \
+            --seeds "${{ github.event.inputs.seeds || '7,13' }}" \
+            --sigma0 "${{ github.event.inputs.sigma0 || '0.15' }}" \
+            --seed-file "${{ github.event.inputs.seed_file || 'data/seeds/seed_tpe_best.toml' }}" \
+            --uma "${{ github.event.inputs.uma || '111501' }}" \
+            --level "${{ github.event.inputs.level || 'smoke' }}"
+      - name: Commit txt 日志进仓（跑批自动留档）
+        run: |
+          git config user.name "race-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add logs/ || true
+          git commit -m "warmstart-race run ${{ github.run_number }}: txt 日志自动留档" || echo "无新日志"
+          git push || echo "（同 run 已提交过）"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: warmstart-race-result
+          path: |
+            results/
+            logs/
