@@ -10,6 +10,7 @@ from .spsa_opt import SpsaOptimizer
 from .tpe_opt import TpeOptimizer
 from .xnes_opt import XnesOptimizer
 from .bore_opt import BoreOptimizer
+from .hyperband_opt import HyperbandOptimizer
 
 REGISTRY = {
     "cmaes": CmaesOptimizer,
@@ -27,4 +28,7 @@ REGISTRY = {
     # xnes 分布参数自然梯度（CMA-ES 同族对照）；bore 密度比 BO（GBDT 分类器）
     "xnes": XnesOptimizer,
     "bore": BoreOptimizer,
+    # 2026-10-23 第三梯队：multi-fidelity 早停（blackbox-selection 补位）。
+    # 与分布面搜索互补，用「少局数粗筛 + 幸存者加精度」省算力；固定精度下退化 SH。
+    "hyperband": HyperbandOptimizer,
 }
