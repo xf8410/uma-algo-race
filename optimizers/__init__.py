@@ -10,6 +10,7 @@ from .spsa_opt import SpsaOptimizer
 from .tpe_opt import TpeOptimizer
 from .xnes_opt import XnesOptimizer
 from .bore_opt import BoreOptimizer
+from .thompson_ucb_opt import ThompsonUcbOptimizer
 
 REGISTRY = {
     "cmaes": CmaesOptimizer,
@@ -27,4 +28,7 @@ REGISTRY = {
     # xnes 分布参数自然梯度（CMA-ES 同族对照）；bore 密度比 BO（GBDT 分类器）
     "xnes": XnesOptimizer,
     "bore": BoreOptimizer,
+    # 2026-10-23 第三梯队冲高分：局部高斯后验 + 随机乐观 β 的 bandit 采集
+    # （μ̂=k 近邻均值, σ̂=邻域 std，α=μ̂+βσ̂ 取 argmax）——贝叶斯后验更新路线
+    "thompson_ucb": ThompsonUcbOptimizer,
 }
