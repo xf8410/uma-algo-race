@@ -1,5 +1,5 @@
-# GA 暖启新锚：ga seed=103 best=65020.2（基线 64913.4，Δ+106.8）
-# 来源：results/ga_stage2_128_10seed.json
+# GA 暖启新锚：ga seed=23 best=65062.0（基线 65020.2，Δ+41.8）
+# 来源：results/ga_stage3_128_8seed.json
 vital_rest = 47
 wisdom_vital_floor = 30
 status_rate = 0.623515
@@ -7,11 +7,11 @@ pt_tradeoff = 46.669159
 pt_tradeoff_shining = 25.137391
 pt_tradeoff_super = 24.604574
 cap_discount_weight = 1.6959
-failure_penalty = 81.115178
+failure_penalty = 75.607636
 shining_bonus = 60.122917
 train_vital_value = 1.722851
-rest_base = 30.120894
-rest_target_vital = 68
+rest_base = 34.114257
+rest_target_vital = 71
 race_free_urgency_weight = 2667.349072
 race_gate_slack = 1
 friend_outing_bonus = 50.85943
@@ -21,8 +21,8 @@ ramen_stock_cost = 0.427286
 region_xunlian_weight = 12.203495
 region_hint_weight = 12.1432
 region_youqing_weight = 0.308667
-event_motivation_weight = 43.035315
-early_bond_value = 5.068102
+event_motivation_weight = 43.947838
+early_bond_value = 4.715197
 low_friend_bond_value = 5.748643
 overflow_value = 1.8963
 max_base_score_sacrifice = 352.388756
