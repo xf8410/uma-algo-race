@@ -16,6 +16,7 @@
 输出：results/warmstart_<stamp>/result.json + report.md
 """
 import argparse
+import inspect
 import json
 import sys
 import time
@@ -58,8 +59,16 @@ def paired_t_vs_const(deltas):
 def run_one(name, cls, ev, seed, n_iter, warm, sigma0, level="smoke",
             opt_kwargs=None):
     t0 = time.time()
-    opt = cls(dim=DIM, seed=seed, center=warm, sigma0=sigma0,
-              **(opt_kwargs or {}))
+    # 各优化器签名不同（tpe/cem/sa/spsa/ars/powell/map_elites 不吃 sigma0），
+    # 按签名过滤，避免 TypeError
+    sig = inspect.signature(cls.__init__).parameters
+    kwargs = {"dim": DIM, "seed": seed, "center": warm}
+    if "sigma0" in sig:
+        kwargs["sigma0"] = sigma0
+    for k, v in (opt_kwargs or {}).items():
+        if k in sig:
+            kwargs[k] = v
+    opt = cls(**kwargs)
     curve = []
     best_x, best_score = None, -float("inf")
     for i in range(n_iter):
