@@ -55,9 +55,11 @@ def paired_t_vs_const(deltas):
     return mean, std, t, p
 
 
-def run_one(name, cls, ev, seed, n_iter, warm, sigma0, level="smoke"):
+def run_one(name, cls, ev, seed, n_iter, warm, sigma0, level="smoke",
+            opt_kwargs=None):
     t0 = time.time()
-    opt = cls(dim=DIM, seed=seed, center=warm, sigma0=sigma0)
+    opt = cls(dim=DIM, seed=seed, center=warm, sigma0=sigma0,
+              **(opt_kwargs or {}))
     curve = []
     best_x, best_score = None, -float("inf")
     for i in range(n_iter):
@@ -102,6 +104,9 @@ def main():
     ap.add_argument("--level", default="smoke", choices=["smoke", "full"],
                     help="评估档位：smoke=3build×100局 / full=7build×100局+holdout43")
     ap.add_argument("--seed-file", default=str(ROOT / "data/seeds/seed_tpe_best.toml"))
+    ap.add_argument("--ga-pop", type=int, default=8,
+                    help="GA 种群规模（仅 --algos 含 ga 时生效；老家 GA 为 60，"
+                         "E2b 降本实验为 8，pop16/gens32 为规划档）")
     ap.add_argument("--uma", type=int, default=111501)
     ap.add_argument("--mock", action="store_true")
     args = ap.parse_args()
@@ -134,13 +139,15 @@ def main():
     gpe = 300 if args.level == "smoke" else 1400   # full=700训练+700holdout
     results = {"algos": algos, "seeds": seed_list, "n_iter": args.n_iter,
                "sigma0": args.sigma0, "baseline": baseline, "runs": [],
-               "bench_level": args.level, "games_per_eval": gpe}
+               "bench_level": args.level, "games_per_eval": gpe,
+               "ga_pop": args.ga_pop}
     n_evals_start = getattr(ev, "n_evals", 0)
     for name in algos:
         cls = REGISTRY[name]
+        opt_kwargs = {"pop": args.ga_pop} if name == "ga" else None
         for seed in seed_list:
             r = run_one(name, cls, ev, seed, args.n_iter, warm, args.sigma0,
-                        level=args.level)
+                        level=args.level, opt_kwargs=opt_kwargs)
             results["runs"].append(r)
             print(f"[warm] {name} seed={seed}: best={r['best']} "
                   f"({r['elapsed_sec']}s)")
@@ -223,7 +230,8 @@ def main():
         "=" * 62,
         "",
         "【协议】",
-        f"  算法: {', '.join(algos)}（均暖启自同一冠军向量，sigma0={args.sigma0}）",
+        f"  算法: {', '.join(algos)}（均暖启自同一冠军向量，sigma0={args.sigma0}"
+        + (f"，GA pop={args.ga_pop}" if "ga" in algos else "") + "）",
         f"  种子: {seed_list} × {args.n_iter} iter（CRN: bench seed=42 配对）",
         f"  评估: {args.level} 档（smoke=3 初筛卡组×100 局 / full=7 build×100 局+holdout 43）",
         f"  基线: 冠军重放定标 B={baseline}",

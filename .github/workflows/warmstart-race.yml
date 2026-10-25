@@ -24,8 +24,11 @@ on:
       level:
         description: "评估档位（smoke/full）"
         default: "smoke"
+      ga_pop:
+        description: "GA 种群规模（仅 algos 含 ga 时生效；E2b=8，规划档=16）"
+        default: "8"
   push:
-    paths: ["optimizers/**", "experiments/warmstart_race.py", "lab/**", ".github/workflows/warmstart-race.yml"]
+    paths: ["optimizers/**", "experiments/warmstart_race.py", "lab/**", "tests/**", ".github/workflows/warmstart-race.yml"]
 
 permissions:
   contents: write   # txt 日志自动 commit+push 需要
@@ -56,6 +59,8 @@ jobs:
           python-version: "3.11"
       - name: Install deps
         run: pip install -r requirements.txt
+      - name: Unit tests（优化器接线/边界/复现性）
+        run: python -m unittest discover -s tests -v
       - name: Build bench_base
         run: cargo build --release -p umasim --bin bench_base
         working-directory: umaai-rs
@@ -70,7 +75,8 @@ jobs:
             --sigma0 "${{ github.event.inputs.sigma0 || '0.15' }}" \
             --seed-file "${{ github.event.inputs.seed_file || 'data/seeds/seed_tpe_best.toml' }}" \
             --uma "${{ github.event.inputs.uma || '111501' }}" \
-            --level "${{ github.event.inputs.level || 'smoke' }}"
+            --level "${{ github.event.inputs.level || 'smoke' }}" \
+            --ga-pop "${{ github.event.inputs.ga_pop || '8' }}"
       - name: Commit txt 日志进仓（跑批自动留档）
         run: |
           git config user.name "race-bot"

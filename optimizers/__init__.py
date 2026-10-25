@@ -10,6 +10,7 @@ from .spsa_opt import SpsaOptimizer
 from .tpe_opt import TpeOptimizer
 from .xnes_opt import XnesOptimizer
 from .bore_opt import BoreOptimizer
+from .ga_opt import GaOptimizer
 
 REGISTRY = {
     "cmaes": CmaesOptimizer,
@@ -27,4 +28,7 @@ REGISTRY = {
     # xnes 分布参数自然梯度（CMA-ES 同族对照）；bore 密度比 BO（GBDT 分类器）
     "xnes": XnesOptimizer,
     "bore": BoreOptimizer,
+    # 2026-10-24 第三梯队：老家 GA（r8 71415.6 的产地）以连续子集复刻，
+    # 暖启自 xNES 冠军，检验同一参数面 GA 能否再挤出分
+    "ga": GaOptimizer,
 }
