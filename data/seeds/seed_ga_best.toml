@@ -1,5 +1,5 @@
-# GA 暖启新锚：ga seed=13 best=65114.3（基线 65062.0，Δ+52.3）
-# 来源：results/ga_stage4_512_8seed.json
+# GA 暖启新锚：ga seed=23 best=65124.1（基线 65114.3，Δ+9.8）
+# 来源：results/ga_stage5_128_8seed.json
 vital_rest = 47
 wisdom_vital_floor = 29
 status_rate = 0.623515
@@ -10,7 +10,7 @@ cap_discount_weight = 1.6959
 failure_penalty = 70.902649
 shining_bonus = 60.122917
 train_vital_value = 1.72393
-rest_base = 33.299816
+rest_base = 41.47472
 rest_target_vital = 71
 race_free_urgency_weight = 2667.349072
 race_gate_slack = 1
