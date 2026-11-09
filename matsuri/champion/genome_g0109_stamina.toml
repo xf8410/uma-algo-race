@@ -1,0 +1,71 @@
+[decks.champion_g0109]
+comp = [1, 2, 1, 0, 1]
+note = "耐主；2026-11-09 定档 GA run3 g0109｜手写对 g0269 +2200、影子 +2850；搜索 N=8192 对 ga-r2 +621 ±262（t 2.37）"
+
+[decks.champion_g0109.fusion]
+year2 = [
+    { base = 101, target = 601 },
+    { base = 201, target = 701 },
+]
+year3 = [
+    { base = 501, target = 801 },
+    { base = 301, target = 901 },
+    { base = 401, target = 1001 },
+]
+
+[decks.champion_g0109.advice]
+t2 = [201, 101, 501, 301, 401]
+t11 = [501, 101, 201, 301, 401]
+t23 = [101, 401, 501, 301, 201]
+t35 = [501, 101, 401, 301, 201]
+t47 = [101, 501, 401, 301, 201]
+t59 = [101, 501, 401, 301, 201]
+
+[decks.champion_g0109.trainer]
+pt_favor_rate = 2.130577
+rest_vital = 63
+checkpoint_margin = 4
+act_level_target = 1
+self_race = false
+friend_outing_early = true
+free_race_urgency = 1.716725
+status_weights = [0.5059, 0.266166, 0.528155, 0.055917, 0.747582]
+
+[decks.champion_g0109.trainer.weights]
+vital = 5.188773
+motivation = 9.086837
+friendship = 3.332008
+hint = 3.518255
+gauge = 46.200158
+act_level = 71.878883
+checkpoint = 2138.199587
+fat = 284.888897
+
+[decks.champion_g0109.trainer.advice]
+card = 1.593206
+npc = 0.328396
+train = 0.145448
+keiko = 1.342739
+level = 0.633956
+milestone = 0.155985
+status_limit = 0.0
+assist = 0.0
+route = 487.457146
+
+[decks.champion_g0109.trainer.dynamic]
+status_catchup = 1.948776
+act_catchup = 0.04151
+vital_decay = 0.026378
+vital_idle = 2.83136
+keiko_tempo = 1.971662
+
+[decks.champion_g0109.trainer.overflow]
+margin = 0.033668
+tilt = 3.26761
+keep = 0.262232
+
+[decks.champion_g0109.trainer.endgame]
+keiko = 515.503427
+scarcity = 0.812819
+level = 154.744765
+normal_penalty = 448.645844

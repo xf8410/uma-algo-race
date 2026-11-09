@@ -1,0 +1,67 @@
+# 数据来源登记（本命名空间所有骏大祭数据的唯一溯源）
+# files 段 = 上游 47e177d 原样搬运文件 + 本轮蒸馏产物；逐项 SHA256 与实物校验过。
+# 本命名空间自建的文档/脚手架（README/ANCHOR/CHAMPION/ITERATE/gate.py/warmstart.sh/
+# verify_isolation.py/SOURCE.yaml 自身）不属于上游数据，不在此登记。
+source_repo: https://github.com/umaai-project/umaai-matsuri
+source_commit: 47e177df9bcb5dd40bef5661699851362f8777af
+source_commit_date: "2026-11-09 17:02:55 +0800"
+synced_at: "2026-11-09 22:20:05 +0800"
+target_repo: https://github.com/xf8410/uma-algo-race
+target_branch: workbench/seed-matsuri-champion-20261109
+caliber: 骏大祭剧本 / cardtest 官方评分 / 与 71k 老家口径物理隔离
+policy: 本目录数据文件禁止出现另一套参数面的字段名或其锚点分数；由 iterate/verify_isolation.py 门禁强制
+files:
+  - path: baseline/a-normal.json
+    bytes: 713
+    sha256: ba993583ccb8f21ae26743b8426796b2178395027e23c64990b726bb9059f204
+  - path: baseline/b-ideal.json
+    bytes: 716
+    sha256: a617d6242073c03c31b8ca86c65029db8d174fc84dfe0b45f56dea6ab982aeaf
+  - path: baseline/README.md
+    bytes: 2162
+    sha256: c40e512d602cdf1fd64f3b72e5d4885a0914cf17793719c9b45668e9ae82bc24
+  - path: data/matsuri_config.toml
+    bytes: 9317
+    sha256: 6aef97b7984fe4b351b16d6bc4aaad7ead02ca092d9ade2e73e1f5899254faf7
+  - path: data/decks/measured.csv
+    bytes: 400
+    sha256: 159b45c5be2e0e86571ae1f095ce52869844a5772986b364625b1302652db30c
+  - path: data/decks/panel.csv
+    bytes: 388
+    sha256: 9c2bcd2e903517a2f87315d44ab04975562c6dcbc478e8ccea09ff493284079a
+  - path: data/decks/speed_build.csv
+    bytes: 457
+    sha256: 84e05cf50f360a23f4f2e683ecf05404bb5cc490dd8326242526c8bb73ee7124
+  - path: data/decks/stamina_build.csv
+    bytes: 593
+    sha256: df3cde8d5ae366e99c046f7dfc1a9e8a36c943306a9aab50eaabdad533582be7
+  - path: data/decks/wisdom_build.csv
+    bytes: 577
+    sha256: 397afce0d4dc7d259ebba6f2a704cd5ec1c63cb3dac6e636c83b0175f5a2bec0
+  - path: data/plan/round_2026-11-09.md
+    bytes: 10150
+    sha256: 559a70cafb80cc3c2996adc33f29c2a62fd87ccfff5d9fad7992a5f3c01cb074
+  - path: data/plan/deck_param_scan.md
+    bytes: 18234
+    sha256: c832c8fae5b1335c2cb80be9c263a2db76ad55a8ea327cf2aead20d634c4feaa
+  - path: data/plan/deck_config.md
+    bytes: 10997
+    sha256: b3658282ae9a675cac7192852cd028bde249786fbc145a0a7f4d173b6242b7df
+  - path: tools/ga_trainer.py
+    bytes: 33479
+    sha256: 3f1ff5e2b84c4523abbc12911ffef8306279347198a7c69edab77d475f0cce1c
+  - path: tools/search_check.py
+    bytes: 12984
+    sha256: 3ab81434f71b4c066d83df484e15bbb0436f30cddda752b70ee90ba3688499c9
+  - path: champion/genome_g0269_default.toml
+    bytes: 3519
+    sha256: 27f36986059a189753c5aca994de09bbf1ce28fe0fdeface358b4ac1987f8702
+  - path: champion/genome_g0109_stamina.toml
+    bytes: 1651
+    sha256: 3921822c9221d0431ded24d1acd369bbdca8258acb4ca6bad183e769e8704fa8
+  - path: champion/genome_g0339_wisdom.toml
+    bytes: 1719
+    sha256: 603e76fa3a18d0b97e5173cf9f2606f7ba8a7bd7bb7899c9e023c7abf07cacdd
+  - path: champion/scoreboard.csv
+    bytes: 1230
+    sha256: a91619bf70ca699622c7ccb8a9f0c9e956caa01f90b52757a508a42e9db78073

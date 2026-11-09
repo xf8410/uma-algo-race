@@ -1,0 +1,95 @@
+[decks.champion_g0269]
+comp = [2, 1, 1, 0, 1]
+note = "速主默认档（原 speed_build / 21101）；未匹配卡组走这里"
+
+[decks.champion_g0269.fusion]
+year2 = [
+    { base = 101, target = 601 },
+    { base = 201, target = 701 },
+]
+# 第 3 年顺序 = 冠军档（「融合 #2」）：501→801 / 301→901 / 401→1001
+year3 = [
+    { base = 501, target = 801 },
+    { base = 301, target = 901 },
+    { base = 401, target = 1001 },
+]
+
+# 教诲落位预设：每行顺序 = 速 / 耐 / 力 / 根 / 智；值 = 基础教诲 id
+[decks.champion_g0269.advice]
+t2 = [101, 201, 501, 301, 401]
+t11 = [101, 501, 201, 301, 401]
+t23 = [101, 401, 501, 301, 201]
+t35 = [101, 501, 301, 401, 201]
+t47 = [101, 501, 401, 301, 201]
+t59 = [501, 401, 101, 301, 201]
+
+# 手写训练员策略旋钮
+[decks.champion_g0269.trainer]
+# 目标函数的 PT 偏好：1.0 = 官方评分；官方计分固定 ×2.0，此处只影响决策优先级。
+# 2026-11-08 扫测（N=2048 × 10 局）：1.0→3.0 总分持平、PT 单调升、技能+五维等量降——
+# 它是「构成偏好」而非「分数旋钮」。
+pt_favor_rate = 1.931954
+# 体力低于此值进入「该休息了」区间（仍由打分表对比收益）
+rest_vital = 66
+# 発表会 / 本番达标保护的提前回合（0 = 关闭）
+checkpoint_margin = 4
+# Senior 合宿前把「有编成卡的演目」推到的最小 Lv（0 = 关闭）
+act_level_target = 2
+# 是否打自选比赛（false = 只在目标赛出手）
+self_race = false
+# 友人外出是否尽早用完（攻略策略；false = 按收益打分）
+friend_outing_early = true
+# 自选比赛（freeRaces 义务区间）补足紧迫度软加分（0 = 关；硬保底不受此开关影响）
+free_race_urgency = 1.764718
+# 五维策略权重（速 / 耐 / 力 / 根 / 智；官方评分边际之外的偏好）
+status_weights = [0.994888, 0.542242, 0.407084, 0.156003, 0.860951]
+
+# 属性 / 资源 / 事件折算权重（单位 = 评分点）
+[decks.champion_g0269.trainer.weights]
+vital = 5.730157
+motivation = 10.93116
+friendship = 3.339714
+hint = 4.313881
+gauge = 53.094769
+act_level = 58.536224
+checkpoint = 2223.151961
+fat = 193.041812
+
+# 教诲分配价值权重（特征系数；注意与 [decks.champion_g0269.advice] 的落位预设区分）
+[decks.champion_g0269.trainer.advice]
+card = 1.684001
+npc = 0.3559
+train = 0.153215
+keiko = 1.158553
+level = 0.772682
+milestone = 0.028781
+# 特化上限（601）/ 助力の支え（401）：实测噪声或有害，锁 0（GA 不搜）
+status_limit = 0.0
+assist = 0.0
+# 落位先验强度（0 = 关；500 = 命中一格 +500，等价于外部钉位）
+route = 392.251041
+
+# 动态权重层（相对剩余空间 / 时间价值 / 稽古节奏；全 0 = 关闭）
+[decks.champion_g0269.trainer.dynamic]
+status_catchup = 3.086141
+act_catchup = 0.012934
+vital_decay = 0.005776
+vital_idle = 1.625975
+keiko_tempo = 2.239315
+
+# 溢出处理（按生效上限判定；全 0 = 关闭）
+[decks.champion_g0269.trainer.overflow]
+margin = 0.076106
+tilt = 3.54432
+keep = 0.018218
+
+# 第三年合宿结束～T71 的稽古兑现（只作用普通回合；全 0 = 关闭，URA 不参与）
+[decks.champion_g0269.trainer.endgame]
+keiko = 763.274261
+scarcity = 0.45993
+level = 162.659083
+normal_penalty = 462.583525
+
+# ---------- 非默认卡组档 ----------
+# 耐 12101 / 智 11102：GA run3 以 g0269 为起点按卡组独立调参，按 comp 自动触发。
+# 两档写全全部旋钮，default 再调也不会连带改动它们。guts 20111 未建档，回落 default。

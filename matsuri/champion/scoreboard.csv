@@ -1,0 +1,8 @@
+﻿metric_type,score_id,comparable_group,scenario,uma,buff,trainer,search_n,seed0,games,score_mean,score_sd,pt_mean,pt_sd,t_stat,source,commit
+absolute,a-normal-handwritten,a-normal@0,a-normal,105902,none/shield0,handwritten,0,73200,100,83793.9,3060.6,11731.4,358.1,,baselines/a-normal.json,47e177d
+absolute,a-normal-search,a-normal@8192,a-normal,105902,none/shield0,search,8192,73200,10,87557.1,1612.9,12620.1,336.8,,baselines/a-normal.json,47e177d
+absolute,b-ideal-handwritten,b-ideal@0,b-ideal,106302,xiaoqie/shield2,handwritten,0,73200,100,88385.3,2225.0,12314.2,369.8,,baselines/b-ideal.json,47e177d
+absolute,b-ideal-search,b-ideal@8192,b-ideal,106302,xiaoqie/shield2,search,8192,73200,10,91535.7,765.1,13293.8,302.5,,baselines/b-ideal.json,47e177d
+paired_delta,champ-g0269,GA-search-N8192-vs-current,3uma×4sire,105902/102102/100101,-,search,8192,-,39,+898,259,-,-,3.47,deck_param_scan.md §10.2,47e177d
+paired_delta,champ-g0109,GA-search-N8192-vs-current,3uma×4sire,105902/102102/100101,-,search,8192,-,38,+621,262,-,-,2.37,deck_param_scan.md §10.2,47e177d
+paired_delta,champ-g0339,GA-search-N8192-vs-current,3uma×4sire,105902/102102/100101,-,search,8192,-,86,+553,194,-,-,2.85,deck_param_scan.md §10.2,47e177d
